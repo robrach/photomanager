@@ -132,4 +132,5 @@ dmypy.json
 .idea/
 
 # Temporary files
-TODO.txt
+Notatki.txt
+Python test.pdf
