@@ -1,3 +1,21 @@
 from django.contrib import admin
+from .models import Album, Photo
 
-# Register your models here.
+
+@admin.register(Album)
+class AlbumAdmin(admin.ModelAdmin):
+    ordering = ['id']
+
+
+@admin.register(Photo)
+class PhotoAdmin(admin.ModelAdmin):
+    ordering = ['id']
+    list_display = [
+        'id',
+        'title',
+        'album_id',
+        'width',
+        'height',
+        'dominant_color',
+        'url_local',
+    ]
