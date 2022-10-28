@@ -1,10 +1,9 @@
-from django.shortcuts import render
-
 from django.http.response import JsonResponse
 from rest_framework.parsers import JSONParser
 from rest_framework import status
 from rest_framework import viewsets
 from rest_framework.decorators import api_view
+
 
 from .models import Photo
 from manager.serializers import PhotoSerializer
@@ -29,6 +28,10 @@ def photo_list(request):
 
     elif request.method == 'POST':
         photo_data = JSONParser().parse(request)
+        # In the request only tile, album_id, url_local are given, so below other values are defined
+        photo_data['width'] = 9999  # TODO: here call the function that will define the value
+        photo_data['height'] = 9999 # TODO: here call the function that will define the value
+        photo_data['dominant_color'] = '9999'   # TODO: here call the function that will define the value
         photo_serializer = PhotoSerializer(data=photo_data)
         if photo_serializer.is_valid():
             photo_serializer.save()
