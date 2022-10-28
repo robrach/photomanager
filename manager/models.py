@@ -9,7 +9,7 @@ class Album(models.Model):
 
 class Photo(models.Model):
     title = models.CharField(max_length=100)
-    album_id = models.ForeignKey(Album, on_delete=models.PROTECT)
+    album_id = models.IntegerField()
     width = models.IntegerField()
     height = models.IntegerField()
     dominant_color = models.CharField(max_length=10)

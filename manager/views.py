@@ -1,6 +1,6 @@
-from .models import Photo, Album
+from .models import Photo
 from rest_framework import viewsets
-from manager.serializers import PhotoSerializer, AlbumSerializer
+from manager.serializers import PhotoSerializer
 
 
 class PhotoViewSet(viewsets.ModelViewSet):
@@ -9,8 +9,3 @@ class PhotoViewSet(viewsets.ModelViewSet):
     """
     queryset = Photo.objects.all()
     serializer_class = PhotoSerializer
-
-
-class AlbumsViewSet(viewsets.ModelViewSet):
-    queryset = Album.objects.all()
-    serializer_class = AlbumSerializer
