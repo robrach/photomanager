@@ -5,6 +5,10 @@ from .models import Album, Photo
 @admin.register(Album)
 class AlbumAdmin(admin.ModelAdmin):
     ordering = ['id']
+    list_display = [
+        'id',
+        '__str__',
+    ]
 
 
 @admin.register(Photo)
