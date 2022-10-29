@@ -5,7 +5,7 @@ import requests
 
 class PhotoListApiTest(TestCase):
     """
-    Tests of API view: photo_list
+    Tests for api_view 'photo_list'
     """
     def test_get_all(self):
         response = requests.get('http://127.0.0.1:8000/zdjecia')
@@ -32,7 +32,7 @@ class PhotoListApiTest(TestCase):
 
 class PhotosDetailApiTest(TestCase):
     """
-    Tests of API view: photo_detail
+    Tests for api_view 'photo_detail'
     """
     def test_1_get_photo(self):
         response = requests.get('http://127.0.0.1:8000/zdjecia')
