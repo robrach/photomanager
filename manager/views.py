@@ -17,6 +17,8 @@ class PhotoViewSet(viewsets.ModelViewSet):
     serializer_class = PhotoSerializer
 
 
+
+
 @api_view(['GET', 'POST'])
 def photo_list(request):
     # GET list of photos, POST a new photo
@@ -28,10 +30,10 @@ def photo_list(request):
 
     elif request.method == 'POST':
         photo_data = JSONParser().parse(request)
-        # In the request only tile, album_id, url_local are given, so below other values are defined
+        # In the request only tile, album_id, url are given, so below other values are defined
         photo_data['width'] = 9999  # TODO: here call the function that will define the value
         photo_data['height'] = 9999 # TODO: here call the function that will define the value
-        photo_data['dominant_color'] = '9999'   # TODO: here call the function that will define the value
+        photo_data['color_dominant'] = '9999'   # TODO: here call the function that will define the value
         photo_serializer = PhotoSerializer(data=photo_data)
         if photo_serializer.is_valid():
             photo_serializer.save()

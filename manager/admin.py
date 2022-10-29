@@ -20,6 +20,6 @@ class PhotoAdmin(admin.ModelAdmin):
         'album_id',
         'width',
         'height',
-        'dominant_color',
-        'url_local',
+        'color_dominant',
+        'url',
     ]

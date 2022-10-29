@@ -12,8 +12,8 @@ class Photo(models.Model):
     album_id = models.IntegerField()
     width = models.IntegerField()
     height = models.IntegerField()
-    dominant_color = models.CharField(max_length=10)
-    url_local = models.CharField(max_length=255)
+    color_dominant = models.CharField(max_length=10)
+    url = models.CharField(max_length=255)
 
     def __str__(self):
         return f'Photo_{self.pk}'
