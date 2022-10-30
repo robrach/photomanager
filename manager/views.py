@@ -17,8 +17,6 @@ class PhotoViewSet(viewsets.ModelViewSet):
     serializer_class = PhotoSerializer
 
 
-
-
 @api_view(['GET', 'POST'])
 def photo_list(request):
     # GET list of photos, POST a new photo
@@ -30,6 +28,8 @@ def photo_list(request):
 
     elif request.method == 'POST':
         photo_data = JSONParser().parse(request)
+        print(type(photo_data))
+        print(photo_data)
         # In the request only tile, album_id, url are given, so below other values are defined
         photo_data['width'] = 9999  # TODO: here call the function that will define the value
         photo_data['height'] = 9999 # TODO: here call the function that will define the value
@@ -64,3 +64,27 @@ def photo_detail(request, pk):
     elif request.method == 'DELETE':
         photo.delete()
         return JsonResponse({'message': f'Photo id={pk} was deleted successfully.'}, status=status.HTTP_204_NO_CONTENT)
+
+
+def define_import_source(url):
+    """
+    Return type of source: local_photo_file OR external_api OR json_file.
+    """
+    if url[:4] == 'http':
+        return 'external_api'
+    elif url[-5:] == '.json':
+        return 'json_file'
+    else:
+        return 'local_photo_file'
+
+
+def read_local_photo_file(url):
+    pass
+
+
+def import_from_external_api(url):
+    pass
+
+
+def import_from_json_file(url):
+    pass

@@ -1,6 +1,7 @@
 from django.test import TestCase
 from rest_framework import status
 import requests
+from manager.views import define_import_source
 
 
 class PhotoListApiTest(TestCase):
@@ -59,3 +60,23 @@ class PhotosDetailApiTest(TestCase):
     def test_3_delete_photo(self):
         response = requests.delete(f'http://127.0.0.1:8000/zdjecia/{id}')
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+
+class PhotoSourceTest(TestCase):
+    """
+    Tests for defining source of photo: local_photo_file, external_api, json_file.
+    """
+    def test_source_is_local_disk(self):
+        url = '/home/user/example_dir/photo.jpg'
+        source_type = define_import_source(url)
+        self.assertEqual(source_type, 'local_photo_file')
+
+    def test_source_is_external_api(self):
+        url = 'https://via.placeholder.com/600/92c952'
+        source_type = define_import_source(url)
+        self.assertEqual(source_type, 'external_api')
+
+    def test_source_is_json_file(self):
+        url = '/home/user/photo_details.json'
+        source_type = define_import_source(url)
+        self.assertEqual(source_type, 'json_file')
