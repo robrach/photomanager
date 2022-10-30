@@ -1,9 +1,10 @@
 from django.test import TestCase
 from rest_framework.test import APITestCase
 from rest_framework import status
-import requests
-from manager.views import define_import_source
+
 from manager.models import Photo
+from manager.views import define_import_source
+from manager.views import read_local_photo_file
 
 
 class PhotoListApiTest(APITestCase):
@@ -87,6 +88,7 @@ class PhotoSourceTest(TestCase):
     """
     Tests for defining source of photo: local_photo_file, external_api, json_file.
     """
+
     def test_source_is_local_disk(self):
         url = '/home/user/example_dir/photo.jpg'
         source_type = define_import_source(url)
@@ -101,3 +103,16 @@ class PhotoSourceTest(TestCase):
         url = '/home/user/photo_details.json'
         source_type = define_import_source(url)
         self.assertEqual(source_type, 'json_file')
+
+
+class DetailsFromLocalPhotoFileTest(TestCase):
+    def test_read_details_from_local_photo_file(self):
+        self.url = 'manager/example_photos/strawberries.jpg'
+        file_details = read_local_photo_file(self.url)
+        width = file_details['width']
+        height = file_details['height']
+        color_dominant = file_details['color_dominant']
+
+        self.assertEqual(width, 1350)
+        self.assertEqual(height, 898)
+        self.assertEqual(color_dominant, 'd01c23')

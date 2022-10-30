@@ -4,9 +4,11 @@ from rest_framework import status
 from rest_framework import viewsets
 from rest_framework.decorators import api_view
 
-
-from .models import Photo
+from manager.models import Photo
 from manager.serializers import PhotoSerializer
+
+from colorthief import ColorThief
+from PIL import Image
 
 
 class PhotoViewSet(viewsets.ModelViewSet):
@@ -79,10 +81,17 @@ def define_import_source(url):
 
 
 def read_local_photo_file(url):
-    pass
+    im = Image.open(url)
+    width = im.width
+    height = im.height
+
+    color_thief = ColorThief(url)
+    dominant_color_rgb = color_thief.get_color(quality=1)
+    dominant_color_hex = '%02x%02x%02x' % dominant_color_rgb
+    return {'width': width, 'height': height, 'color_dominant': dominant_color_hex}
 
 
-def import_from_external_api(url):
+def import_from_external_api(url, ):
     pass
 
 
