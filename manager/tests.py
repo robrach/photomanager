@@ -1,15 +1,29 @@
 from django.test import TestCase
+from rest_framework.test import APITestCase
 from rest_framework import status
 import requests
 from manager.views import define_import_source
+from manager.models import Photo
 
 
-class PhotoListApiTest(TestCase):
+class PhotoListApiTest(APITestCase):
     """
-    Tests for api_view 'photo_list'
+    Tests for api_view: 'photo_list'
     """
+    def setUp(self):
+        Photo.objects.create(
+            title='example title',
+            album_id='1',
+            width=100,
+            height=100,
+            color_dominant='92c952',
+            url='/example/url/photo.jpg'
+        )
+        self.url = 'http://127.0.0.1:8000/zdjecia'
+
     def test_get_all(self):
-        response = requests.get('http://127.0.0.1:8000/zdjecia')
+        response = self.client.get(self.url)
+        print(response.json())
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         json = response.json()
@@ -18,28 +32,36 @@ class PhotoListApiTest(TestCase):
             self.assertEqual(type(json[0]), dict)
 
     def test_post_new(self):
-        content = {
-            "title": "example title",
+        data = {
+            "title": "title of a new photo",
             "album_id": 1,
-            "url": "/example/url/sting"
+            "url": "/example/url/string"
         }
-        response = requests.post('http://127.0.0.1:8000/zdjecia', json=content)
+        response = self.client.post(self.url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
         json = response.json()
-        title = json['title']
-        self.assertEqual(title, 'example title')
+        self.assertEqual(json['title'], 'title of a new photo')
+        self.assertEqual(json['id'], 2)
 
 
-class PhotosDetailApiTest(TestCase):
+class PhotoDetailApiTest(APITestCase):
     """
-    Tests for api_view 'photo_detail'
+    Tests for api_view: 'photo_detail'
     """
+    def setUp(self):
+        Photo.objects.create(
+            title='example title',
+            album_id='1',
+            width=100,
+            height=100,
+            color_dominant='92c952',
+            url='/example/url/photo.jpg'
+        )
+        self.url = 'http://127.0.0.1:8000/zdjecia/1'
+
     def test_1_get_photo(self):
-        response = requests.get('http://127.0.0.1:8000/zdjecia')
-        global id
-        id = (response.json()[-1]['id'])
-        response = requests.get(f'http://127.0.0.1:8000/zdjecia/{id}')
+        response = self.client.get(self.url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         global json
@@ -48,17 +70,16 @@ class PhotosDetailApiTest(TestCase):
 
     def test_2_put_photo(self):
         json['title'] = 'new different title'
-        response_put = requests.put(f'http://127.0.0.1:8000/zdjecia/{id}', json=json)
+        response_put = self.client.put(self.url, json, format='json')
         self.assertEqual(response_put.status_code, status.HTTP_200_OK)
 
-        response_get = requests.get(f'http://127.0.0.1:8000/zdjecia/{id}')
+        response_get = self.client.get(self.url)
         self.assertEqual(response_get.status_code, status.HTTP_200_OK)
-
         title = response_get.json()['title']
         self.assertEqual(title, 'new different title')
 
     def test_3_delete_photo(self):
-        response = requests.delete(f'http://127.0.0.1:8000/zdjecia/{id}')
+        response = self.client.delete(self.url)
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
 
