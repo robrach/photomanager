@@ -81,9 +81,9 @@ def define_import_source(url):
 
 
 def read_local_photo_file(url):
-    im = Image.open(url)
-    width = im.width
-    height = im.height
+    image = Image.open(url)
+    width = image.width
+    height = image.height
 
     color_thief = ColorThief(url)
     dominant_color_rgb = color_thief.get_color(quality=1)
