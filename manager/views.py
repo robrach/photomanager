@@ -30,8 +30,8 @@ def photo_list(request):
 
     elif request.method == 'POST':
         photo_data = JSONParser().parse(request)
-        print("log from api.view.photo_list -> request.method=='POST':")
-        print('data in post request:', photo_data)
+        print("...log from api.view.photo_list -> request.method=='POST':")
+        print("...data in post request:", photo_data)
 
         # In the request only tile, album_id, url are given, so below other values are defined
         photo_data['width'] = 9999  # TODO: here call the function that will define the value
@@ -40,6 +40,7 @@ def photo_list(request):
         photo_serializer = PhotoSerializer(data=photo_data)
         if photo_serializer.is_valid():
             photo_serializer.save()
+            print("...response data after post:", photo_serializer.data)
             return JsonResponse(photo_serializer.data, status=status.HTTP_201_CREATED)
 
 

@@ -43,8 +43,6 @@ class PhotoListApiTest(APITestCase):
         json = response.json()
         self.assertEqual(json['title'], 'title of a new photo')
         self.assertEqual(json['id'], 2)
-        print('log from test_post_new:')
-        print('response data after post)', json)
 
 
 class PhotoDetailApiTest(APITestCase):
