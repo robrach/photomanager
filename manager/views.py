@@ -48,20 +48,10 @@ def photo_list(request):
             photo_data['color_dominant'] = data_import['color_dominant']
         elif import_source == 'external_api':
             data_import = import_from_external_api(url)
-            photo_data['title'] = data_import['title']
-            photo_data['album_id'] = data_import['album_id']
-            photo_data['url'] = data_import['url']
-            photo_data['width'] = data_import['width']
-            photo_data['height'] = data_import['height']
-            photo_data['color_dominant'] = data_import['color_dominant']
+            define_photo_data(photo_data, data_import)
         elif import_source == 'json_file':
             data_import = import_from_json_file(url)
-            photo_data['title'] = data_import['title']
-            photo_data['album_id'] = data_import['album_id']
-            photo_data['url'] = data_import['url']
-            photo_data['width'] = data_import['width']
-            photo_data['height'] = data_import['height']
-            photo_data['color_dominant'] = data_import['color_dominant']
+            define_photo_data(photo_data, data_import)
 
         photo_serializer = PhotoSerializer(data=photo_data)
 
@@ -127,28 +117,16 @@ def read_local_photo_file(url):
 def import_from_external_api(url):
     response = requests.get(url)
     data = response.json()
-
-    title = data['title']
-    album_id = data['albumId']
-    url = data['url']
-    splitted_url = url.split('/')
-    width = int(splitted_url[-2])
-    height = int(splitted_url[-2])
-    color_dominant = splitted_url[-1]
-    return {
-        'title': title,
-        'album_id': album_id,
-        'url': url,
-        'width': width,
-        'height': height,
-        'color_dominant': color_dominant,
-    }
+    return dict_from_data(data)
 
 
 def import_from_json_file(url):
     file = open(url)
     data = json.load(file)
+    return dict_from_data(data)
 
+
+def dict_from_data(data):
     title = data['title']
     album_id = data['albumId']
     url = data['url']
@@ -164,3 +142,13 @@ def import_from_json_file(url):
         'height': height,
         'color_dominant': color_dominant,
     }
+
+
+def define_photo_data(photo_data, data_import):
+    photo_data['title'] = data_import['title']
+    photo_data['album_id'] = data_import['album_id']
+    photo_data['url'] = data_import['url']
+    photo_data['width'] = data_import['width']
+    photo_data['height'] = data_import['height']
+    photo_data['color_dominant'] = data_import['color_dominant']
+    return photo_data
