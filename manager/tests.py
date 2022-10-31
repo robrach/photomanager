@@ -33,16 +33,19 @@ class PhotoListApiTest(APITestCase):
 
     def test_post_new(self):
         data = {
-            "title": "title of a new photo",
+            "title": "apple",
             "album_id": 1,
-            "url": "/example/url/string"
+            "url": 'manager/example_photos/apple.jpg'
         }
         response = self.client.post(self.url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
         json = response.json()
-        self.assertEqual(json['title'], 'title of a new photo')
         self.assertEqual(json['id'], 2)
+        self.assertEqual(json['title'], 'apple')
+        self.assertEqual(json['width'], 500)
+        self.assertEqual(json['height'], 555)
+        self.assertEqual(json['color_dominant'], '9ec23d')
 
 
 class PhotoDetailApiTest(APITestCase):

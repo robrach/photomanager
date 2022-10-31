@@ -22,6 +22,7 @@ class PhotoViewSet(viewsets.ModelViewSet):
 @api_view(['GET', 'POST'])
 def photo_list(request):
     # GET list of photos, POST a new photo
+
     if request.method == 'GET':
         photos = Photo.objects.all()
 
@@ -33,11 +34,27 @@ def photo_list(request):
         print("...log from api.view.photo_list -> request.method=='POST':")
         print("...data in post request:", photo_data)
 
-        # In the request only tile, album_id, url are given, so below other values are defined
-        photo_data['width'] = 9999  # TODO: here call the function that will define the value
-        photo_data['height'] = 9999 # TODO: here call the function that will define the value
-        photo_data['color_dominant'] = '9999'   # TODO: here call the function that will define the value
+        url = photo_data['url']
+        print('...URL:', url)
+        import_source = define_import_source(url)
+        print('...IMPORT SOURCE:', import_source)
+
+        if import_source == 'local_photo_file':
+            data_import = read_local_photo_file(url)
+        elif import_source == 'external_api':
+            data_import = import_from_external_api(url)
+        elif import_source == 'json_file':
+            data_import = import_from_json_file(url)
+
+        width = data_import['width']
+        height = data_import['height']
+        color_dominant = data_import['color_dominant']
+
+        photo_data['width'] = width
+        photo_data['height'] = height
+        photo_data['color_dominant'] = color_dominant
         photo_serializer = PhotoSerializer(data=photo_data)
+
         if photo_serializer.is_valid():
             photo_serializer.save()
             print("...response data after post:", photo_serializer.data)
