@@ -1,10 +1,12 @@
 from django.test import TestCase
 from rest_framework.test import APITestCase
 from rest_framework import status
-
+import requests
 from manager.models import Photo
 from manager.views import define_import_source
 from manager.views import read_local_photo_file
+from manager.views import import_from_external_api
+from manager.views import import_from_json_file
 
 
 class PhotoListApiTest(APITestCase):
@@ -118,3 +120,17 @@ class DetailsFromLocalPhotoFileTest(TestCase):
         self.assertEqual(width, 1350)
         self.assertEqual(height, 898)
         self.assertEqual(color_dominant, 'd01c23')
+
+
+class DetailsFromExternalApiTest(TestCase):
+    def test_read_details_from_external_api(self):
+        self.url = 'https://jsonplaceholder.typicode.com/photos/1'
+        photo_details = import_from_external_api(self.url)
+
+        self.assertEqual(photo_details['height'], 600)
+        self.assertEqual(photo_details['color_dominant'], '92c952')
+
+
+class DetailsFromJsonFileTest(TestCase):
+    def test_read_details_from_json_file(self):
+        pass

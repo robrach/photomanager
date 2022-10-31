@@ -3,7 +3,7 @@ from rest_framework.parsers import JSONParser
 from rest_framework import status
 from rest_framework import viewsets
 from rest_framework.decorators import api_view
-
+import requests
 from manager.models import Photo
 from manager.serializers import PhotoSerializer
 
@@ -41,18 +41,20 @@ def photo_list(request):
 
         if import_source == 'local_photo_file':
             data_import = read_local_photo_file(url)
+            photo_data['width'] = data_import['width']
+            photo_data['height'] = data_import['height']
+            photo_data['color_dominant'] = data_import['color_dominant']
         elif import_source == 'external_api':
             data_import = import_from_external_api(url)
+            photo_data['title'] = data_import['title']
+            photo_data['album_id'] = data_import['album_id']
+            photo_data['url'] = data_import['url']
+            photo_data['width'] = data_import['width']
+            photo_data['height'] = data_import['height']
+            photo_data['color_dominant'] = data_import['color_dominant']
         elif import_source == 'json_file':
             data_import = import_from_json_file(url)
 
-        width = data_import['width']
-        height = data_import['height']
-        color_dominant = data_import['color_dominant']
-
-        photo_data['width'] = width
-        photo_data['height'] = height
-        photo_data['color_dominant'] = color_dominant
         photo_serializer = PhotoSerializer(data=photo_data)
 
         if photo_serializer.is_valid():
@@ -107,11 +109,32 @@ def read_local_photo_file(url):
     color_thief = ColorThief(url)
     dominant_color_rgb = color_thief.get_color(quality=1)
     dominant_color_hex = '%02x%02x%02x' % dominant_color_rgb
-    return {'width': width, 'height': height, 'color_dominant': dominant_color_hex}
+    return {
+        'width': width,
+        'height': height,
+        'color_dominant': dominant_color_hex,
+    }
 
 
-def import_from_external_api(url, ):
-    pass
+def import_from_external_api(url):
+    response = requests.get(url)
+    json = response.json()
+
+    title = json['title']
+    album_id = json['albumId']
+    url = json['url']
+    splitted_url = url.split('/')
+    width = int(splitted_url[-2])
+    height = int(splitted_url[-2])
+    color_dominant = splitted_url[-1]
+    return {
+        'title': title,
+        'album_id': album_id,
+        'url': url,
+        'width': width,
+        'height': height,
+        'color_dominant': color_dominant,
+    }
 
 
 def import_from_json_file(url):
