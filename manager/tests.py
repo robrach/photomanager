@@ -30,7 +30,7 @@ class PhotoListApiTest(APITestCase):
             color_dominant='d01c23',
             url='/example/url/photo2.jpg'
         )
-        self.url = 'http://127.0.0.1:8000/zdjecia'
+        self.url = 'http://127.0.0.1:8000/photos'
 
     def test_0_get_all(self):
         response = self.client.get(self.url)
@@ -95,7 +95,7 @@ class PhotoDetailApiTest(APITestCase):
             color_dominant='92c952',
             url='/example/url/photo.jpg'
         )
-        self.url = 'http://127.0.0.1:8000/zdjecia/1'
+        self.url = 'http://127.0.0.1:8000/photos/1'
 
     def test_1_get_photo(self):
         response = self.client.get(self.url)

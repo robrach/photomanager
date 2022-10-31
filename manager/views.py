@@ -1,7 +1,6 @@
 from django.http.response import JsonResponse
 from rest_framework.parsers import JSONParser
 from rest_framework import status
-from rest_framework import viewsets
 from rest_framework.decorators import api_view
 
 import requests
@@ -12,14 +11,6 @@ from manager.serializers import PhotoSerializer
 
 from colorthief import ColorThief
 from PIL import Image
-
-
-class PhotoViewSet(viewsets.ModelViewSet):
-    """
-    API endpoint to get info about all photos in the database
-    """
-    queryset = Photo.objects.all()
-    serializer_class = PhotoSerializer
 
 
 @api_view(['GET', 'POST'])
