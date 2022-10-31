@@ -24,7 +24,6 @@ class PhotoListApiTest(APITestCase):
 
     def test_get_all(self):
         response = self.client.get(self.url)
-        print(response.json())
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         json = response.json()
@@ -44,6 +43,8 @@ class PhotoListApiTest(APITestCase):
         json = response.json()
         self.assertEqual(json['title'], 'title of a new photo')
         self.assertEqual(json['id'], 2)
+        print('log from test_post_new:')
+        print('response data after post)', json)
 
 
 class PhotoDetailApiTest(APITestCase):
