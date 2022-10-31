@@ -1,14 +1,5 @@
 from django.contrib import admin
-from .models import Album, Photo
-
-
-@admin.register(Album)
-class AlbumAdmin(admin.ModelAdmin):
-    ordering = ['id']
-    list_display = [
-        'id',
-        '__str__',
-    ]
+from .models import Photo
 
 
 @admin.register(Photo)

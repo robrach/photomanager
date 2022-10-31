@@ -1,12 +1,6 @@
 from django.db import models
 
 
-class Album(models.Model):
-
-    def __str__(self):
-        return f'Album_{self.pk}'
-
-
 class Photo(models.Model):
     title = models.CharField(max_length=100)
     album_id = models.IntegerField()

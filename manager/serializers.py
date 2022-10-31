@@ -1,4 +1,4 @@
-from .models import Photo, Album
+from .models import Photo
 from rest_framework import serializers
 
 
