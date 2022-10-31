@@ -1,7 +1,7 @@
 from django.test import TestCase
 from rest_framework.test import APITestCase
 from rest_framework import status
-import requests
+
 from manager.models import Photo
 from manager.views import define_import_source
 from manager.views import read_local_photo_file
@@ -15,16 +15,24 @@ class PhotoListApiTest(APITestCase):
     """
     def setUp(self):
         Photo.objects.create(
-            title='example title',
+            title='example title 1',
             album_id='1',
             width=100,
             height=100,
             color_dominant='92c952',
-            url='/example/url/photo.jpg'
+            url='/example/url/photo1.jpg'
+        )
+        Photo.objects.create(
+            title='example title 2',
+            album_id='2',
+            width=200,
+            height=200,
+            color_dominant='d01c23',
+            url='/example/url/photo2.jpg'
         )
         self.url = 'http://127.0.0.1:8000/zdjecia'
 
-    def test_get_all(self):
+    def test_0_get_all(self):
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
@@ -33,7 +41,7 @@ class PhotoListApiTest(APITestCase):
         if json:
             self.assertEqual(type(json[0]), dict)
 
-    def test_post_new(self):
+    def test_1_post_new__read_local_file(self):
         data = {
             "title": "apple",
             "album_id": 1,
@@ -43,11 +51,35 @@ class PhotoListApiTest(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
         json = response.json()
-        self.assertEqual(json['id'], 2)
+        self.assertEqual(json['id'], 3)
         self.assertEqual(json['title'], 'apple')
         self.assertEqual(json['width'], 500)
         self.assertEqual(json['height'], 555)
         self.assertEqual(json['color_dominant'], '9ec23d')
+
+    def test_2_post_new__import_from_external_api(self):
+        data = {
+            "url": 'https://jsonplaceholder.typicode.com/photos/1'
+        }
+        response = self.client.post(self.url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        json = response.json()
+        self.assertEqual(json['url'], 'https://via.placeholder.com/600/92c952')
+        self.assertEqual(json['height'], 600)
+        self.assertEqual(json['color_dominant'], '92c952')
+
+    def test_3_post_new__import_from_json_file(self):
+        data = {
+            "url": 'manager/example_photos/photo_json.json'
+        }
+        response = self.client.post(self.url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        json = response.json()
+        self.assertEqual(json['url'], 'https://via.placeholder.com/600/14ba42')
+        self.assertEqual(json['title'], 'et qui rerum')
+        self.assertEqual(json['color_dominant'], '14ba42')
 
 
 class PhotoDetailApiTest(APITestCase):
@@ -126,11 +158,13 @@ class DetailsFromExternalApiTest(TestCase):
     def test_read_details_from_external_api(self):
         self.url = 'https://jsonplaceholder.typicode.com/photos/1'
         photo_details = import_from_external_api(self.url)
-
         self.assertEqual(photo_details['height'], 600)
         self.assertEqual(photo_details['color_dominant'], '92c952')
 
 
 class DetailsFromJsonFileTest(TestCase):
     def test_read_details_from_json_file(self):
-        pass
+        self.url = 'manager/example_photos/photo_json.json'
+        photo_details = import_from_json_file(self.url)
+        self.assertEqual(photo_details['title'], 'et qui rerum')
+        self.assertEqual(photo_details['color_dominant'], '14ba42')

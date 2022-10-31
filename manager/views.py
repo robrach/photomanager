@@ -3,7 +3,10 @@ from rest_framework.parsers import JSONParser
 from rest_framework import status
 from rest_framework import viewsets
 from rest_framework.decorators import api_view
+
 import requests
+import json
+
 from manager.models import Photo
 from manager.serializers import PhotoSerializer
 
@@ -31,11 +34,10 @@ def photo_list(request):
 
     elif request.method == 'POST':
         photo_data = JSONParser().parse(request)
-        print("...log from api.view.photo_list -> request.method=='POST':")
+        print("\n...log from api.view.photo_list -> request.method=='POST':")
         print("...data in post request:", photo_data)
 
         url = photo_data['url']
-        print('...URL:', url)
         import_source = define_import_source(url)
         print('...IMPORT SOURCE:', import_source)
 
@@ -54,6 +56,12 @@ def photo_list(request):
             photo_data['color_dominant'] = data_import['color_dominant']
         elif import_source == 'json_file':
             data_import = import_from_json_file(url)
+            photo_data['title'] = data_import['title']
+            photo_data['album_id'] = data_import['album_id']
+            photo_data['url'] = data_import['url']
+            photo_data['width'] = data_import['width']
+            photo_data['height'] = data_import['height']
+            photo_data['color_dominant'] = data_import['color_dominant']
 
         photo_serializer = PhotoSerializer(data=photo_data)
 
@@ -118,11 +126,11 @@ def read_local_photo_file(url):
 
 def import_from_external_api(url):
     response = requests.get(url)
-    json = response.json()
+    data = response.json()
 
-    title = json['title']
-    album_id = json['albumId']
-    url = json['url']
+    title = data['title']
+    album_id = data['albumId']
+    url = data['url']
     splitted_url = url.split('/')
     width = int(splitted_url[-2])
     height = int(splitted_url[-2])
@@ -138,4 +146,21 @@ def import_from_external_api(url):
 
 
 def import_from_json_file(url):
-    pass
+    file = open(url)
+    data = json.load(file)
+
+    title = data['title']
+    album_id = data['albumId']
+    url = data['url']
+    splitted_url = url.split('/')
+    width = int(splitted_url[-2])
+    height = int(splitted_url[-2])
+    color_dominant = splitted_url[-1]
+    return {
+        'title': title,
+        'album_id': album_id,
+        'url': url,
+        'width': width,
+        'height': height,
+        'color_dominant': color_dominant,
+    }
